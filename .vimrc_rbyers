@@ -1,0 +1,556 @@
+
+set guioptions+=l
+
+" Vundle bundle manager
+" source ~/Mega/vim/vundlerc
+
+"--------------------------------------------------------------------------------
+"
+"    Setting vim options to the value of a variable
+"
+"    The 'set' command does not allow variable names on RHS.
+"    Instead, use the 'let' command with the following syntax..
+"
+"       let SOMEVAL=$HOME.'whatever'
+"       let &<name_of_vim_option>=SOMEVAL
+"
+"    Note '.' is the concatenate operator
+"
+"    Example..
+"
+"       let BKUPDIR=$HOME.'/.vim/bkupdir'
+"       let &backupdir=BKUPDIR
+
+"x "   +----------+
+"x "---| Pathogen |---------------------------------------------------------------
+"x "   +----------+
+"x "
+"x 
+"x filetype off
+"x call pathogen#infect()
+"x call pathogen#helptags()
+"x "iletype plugin indent on
+"x filetype plugin on
+"x syntax on
+
+"   +----------+
+"---| jedi-vim |---------------------------------------------------------------
+"   +----------+
+"
+" plugin 'davidhalter/jedi-vim'
+
+"   +----------------+
+"---| Keyboard Stuff |----------------------------------------------------------
+"   +----------------+
+
+" Make Shift Insert paste the correct clipboard in Windows
+  if has("msdos") || has("win32") || has("win64")
+      nnoremap <S-Insert> "+p
+  endif
+
+" Make Shift Insert paste the correct clipboard in Linux
+  if has("linux") || has("unix")
+      nnoremap <S-Insert> "*p
+      inoremap <expr> <S-Insert> printf('<ESC>"*%s`]a', col('.') == 1 ? 'P' : 'p')
+     "inoremap <S-Insert> <C-R>*
+  endif
+
+" This register is used by some of the subsequent mappings
+
+  let @o = ".nzz"
+
+" [Ctrl-H] Clear search highlighting
+  noremap <silent> <C-h> :noh<Enter>
+
+" [F2] set wrap
+  noremap <F2> :set wrap!<CR>
+
+" [Ctrl-F2] Draw box around text of current line with short tail
+noremap <C-F2> yyP<Enter>i#---<Bar> <Esc>$a <Bar>---<Esc>0kVr-0i#   +<Esc>$a--+<Esc>yy<Enter>po<Esc>
+
+" [Ctrl-F3] Draw box around text of current line with long tail
+noremap <C-F3> :set formatoptions-=t<Enter>yyP<Enter>i#---<Bar> <Esc>$a <Bar>--------------------------------------------------------------------------------<Esc>0kVr-0i#   +<Esc>$a--+<Esc>yy<Enter>pk079lDjo<Esc>j0:set formatoptions+=t<Enter>
+
+" [F3] Restore my prefered formatoptions (after a ftplugin takes it over)
+  nnoremap <F3> :set formatoptions=1acjlnopqt
+
+" [F4] Toggle ('!') spell check
+  noremap <silent> <F4> :set spell!<Enter>
+
+" [Ctrl-F4] Cleanup blank lines:
+  noremap <C-F4> mmMmn:g/^[	 ][	 ]*$/s///<Enter>`nzz`m
+
+" [F5] (for perl filetype): Advance to next perl subroutine (Shift-F5 to seach in reverse)
+  autocmd BufNewFile,BufRead *.pl         noremap <F5> /^sub .*<Enter>zz
+  autocmd BufNewFile,BufRead *.pm         noremap <F5> /^sub .*<Enter>zz
+
+" [F7] Send buffer to different interpretter depending on filetype (default is bash)
+
+  if has("msdos") || has("win32") || has("win64")
+    noremap <F7> mm:%!python<Enter>
+    autocmd BufNewFile,BufRead *.py         noremap <F7> mm:%!python<Enter>
+    autocmd BufNewFile,BufRead *.sh         noremap <F7> mm:%!bash<Enter>
+    autocmd BufNewFile,BufRead *.tcl,*.itcl noremap <F7> mm:%!tclsh<Enter>
+  else
+    noremap <F7> mm:%!/bin/bash<Enter>
+    autocmd BufNewFile,BufRead *.pl         noremap <F7> mm:%!perl -l<Enter>
+    autocmd BufNewFile,BufRead *.pm         noremap <F7> mm:%!perl -l<Enter>
+    autocmd BufNewFile,BufRead *.py         noremap <F7> mm:%!/usr/bin/python3<Enter>
+    autocmd BufNewFile,BufRead *.tcl,*.itcl noremap <F7> mm:%!/usr/bin/tclsh<Enter>
+  endif
+
+" [F8] Repeat last edit, move to next occurence, reposition to center of screen
+
+ "noremap <F8> .nzz
+  noremap <F8> @o
+
+" [F9] Replay the macro stored in register 'q'
+
+  noremap <F9> @q
+
+" [F10] Paste clipboard
+
+  noremap <F10> "+p
+
+" [F11] and [F12] Search for previous or next pattern, and reposition to center of screen.
+" [Alt-F11] and [Alt-F12] Do the same but position the matched line at the top of the screen
+" [Shift-F11] and [Shift-F12] Are the same as Alt-F11 and Alt-F12. I haven't yet decided which I prefer.
+" If started as 'vimdiff', search for previous or next conflict and repo center.
+
+  if &diff
+    noremap <F11> ]czz
+    noremap <F12> [czz
+    noremap <A-F11> ]czt
+    noremap <A-F12> [czt
+    noremap <S-F11> ]czt
+    noremap <S-F12> [czt
+  else
+    noremap <F11> nzz
+    noremap <F12> Nzz
+    noremap <A-F11> nzt
+    noremap <A-F12> Nzt
+    noremap <S-F11> nzt
+    noremap <S-F12> Nzt
+  endif
+
+" [Ctrl-TAB] Move amongst tabs
+  noremap <C-TAB> gt
+
+" I use this but suspect that not everyone will like (!)
+
+  noremap - <PageUp>
+
+" This is to restore the window view if SPACE key is accidentally pressed
+
+  noremap <Space> :let winrestdict = winsaveview()<CR><pagedown>
+  noremap qqq :call winrestview(winrestdict)<CR>
+
+"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+" Run json.tool for the code block starting in the line on which the cursor
+" is located when this tool is invoked.
+"
+" KNOWN ISSUES:
+"
+" Jsontool does not support...
+"
+" o Multiline code blocks. All the json must be on one line prior to starting
+"
+" o Values in parentheses...
+"        "name" : (num, num, ..)
+"    Maybe convert all parenthesis blocks to strings? "(num, num, ..)"
+"
+" o Boolean True and False that are not enclosed by double quotes
+"
+" o Single quotes
+
+function Junk()
+    call append('.', ['','',getline('.'),'',''])
+    execute "normal! 3j0"
+endfunction
+
+function Jsontool()
+
+    "Make a copy of this line, separated by 2 blank lines before and after, and move to col 1 of the copied line
+    call append('.', ['','',getline('.'),'',''])
+    execute "normal! 3j0"
+
+    "If current character is not a left curly brace delete everything up to the first left curly brace
+    let currchar = getline('.')[col('.')-1]
+    if currchar != '{'
+        execute "normal! dt{"
+    endif
+
+    "Make sure we're now positioned on a left curly brace
+    let currchar = getline('.')[col('.')-1]
+    if currchar != '{'
+        echo "current character is not curly brace (1)"
+        return
+    endif
+
+    "Mark the position of this brace
+    execute "normal! mm"
+
+    "Go to the last line of this code block and append a blank line, then return to the mark
+    execute "normal! %"
+    execute "normal! o"
+    execute "normal! o"
+    execute "normal! `m"
+
+   "Make sure the entire code block is on one line, return to the mark
+   execute "normal! v%J`m"
+
+   "Make sure (again) we're positioned on a left curly brace
+   let currchar = getline('.')[col('.')-1]
+   if currchar != '{'
+       echo "current character is not curly brace (2)"
+       return
+   endif
+
+   "Get current line...
+   let currline = getline('.')
+   #echo "currline: " currline
+
+   "Replace single quotes with double quotes (json.tool hates single quotes)
+   let newline = substitute(currline,'''','"','g')
+   #echo "newline: " newline
+   call setline('.', newline)
+
+   "run json.tool on this line
+   execute ".!python -m json.tool"
+endfunction
+
+" No longer using this
+" :noremap <F2> :call Jsontool()<CR>
+
+"-----------------------------------------------------------------------
+" DANGER WILL ROBINSON - this may cause cascading pastes (!!!)
+"
+"     filetype plugin indent on
+"
+" I think this is safer
+
+  filetype plugin on
+
+"-----------------------------------------------------------------------
+" formatoptions
+"
+" I like these settings EXCEPT pasting pre-formatted code ends up being
+" cascaded. (the problem is mostly caused by either 'filetype indent' or
+" indentexpr=<something>))
+"
+"    filetype plugin indent on
+"    set formatoptions+=tcql1j
+"    set smartindent
+"    set textwidth=78
+"    set indentexpr=
+"
+" Possible work-arounds..
+"
+"   - don't use 'indent' with the filetype command
+"   - make sure indentexpr is not set
+"   - use :set paste and :set nopaste before/after the paste
+"   - install https://github.com/ConradIrwin/vim-bracketed-paste
+"   - plugin files often set their own formatoptions AFTER this file has been processed (!!!)
+"   - autoindent and smartindent may need to be disabled too (!!!)
+"
+"-----------------------------------------------------------------------
+" Format options
+"
+" t  Auto-wrap text using textwidth
+"
+" c  Auto-wrap comments using textwidth, inserting the current comment
+"    leader automatically.
+"
+" q  Allow formatting of comments with 'gq'. Note that formatting will
+"    not change blank lines or lines containing only the comment leader.
+"    A new paragraph starts after such a line, or when the comment leader
+"    changes.
+"
+" l  Long lines are not broken in insert mode: When a line was longer than
+"    'textwidth' when the insert command started, Vim does not
+"    automatically format it.
+"
+" j  Where it makes sense, remove a comment leader when joining lines. For
+"
+"        Example, joining...
+"
+"          int i;   // the index
+"                   // in the list
+"        Becomes...
+"
+"          int i;   // the index in the list
+"
+" 1  Don't break a line after a one-letter word. It's broken before it
+"    instead (if possible).
+"
+"-----------------------------------------------------------------------
+" Pasting and clipboard issues
+"
+" The buffers '+' and '*' refer to the system clipboard and the X
+" selection, respectively. However, our version of vim wasn't compiled
+" with clipboard support, as seen here..
+"
+" % vim --version | grep clipboard
+"  -clipboard       +iconv           +path_extra      -toolbar
+"  +eval            +mouse_dec       +startuptime     -xterm_clipboard
+"
+"-----------------------------------------------------------------------
+
+" More options
+
+  set noautoindent
+  set backspace=start,eol,indent
+  set expandtab
+
+
+  " WARNING formatoptions often get changed by filetype plugins *after* this file is processed (!)
+  set formatoptions=n
+  set formatoptions-=1        " Do not break a line after a one-letter word
+  set formatoptions-=a        " Auto paragraph formatting. When text is inserted or deleted paragraph is reformatted. With 'c' flag this only happens for recognized comments.
+  set formatoptions-=c        " Auto-wrap comments using textwidth, inserting the current comment leader automatically.
+  set formatoptions+=j        " Remove comment leader when joining lines
+  set formatoptions+=l        " Do not break long lines
+  set formatoptions+=n        " Recognize numbered lists
+  set formatoptions-=o        " Insert comment leader after pressing 'O' or 'o'
+ "set formatoptions-=p        " (not supported in gvim 7.4)
+  set formatoptions+=q        " Format comments with 'gq'
+  set formatoptions-=r        " Insert comment leader after pressing <Enter> in insert mode
+  set formatoptions-=t        " Auto-wrap text using textwidth
+
+  set history=500
+  set hlsearch
+  set ignorecase
+  set incsearch
+  set infercase
+  set laststatus=2
+  set list
+  set listchars=tab:\ \ ,precedes:<,extends:>
+  set matchtime=4
+  set nocompatible
+  set nowrap         " don't wrap lines
+  set nowrapscan     " don't wrap searches past start/end of buffer
+  set ruler
+  set shellslash
+  set shiftwidth=4
+  set showmatch
+  set sidescroll=8
+  set smartcase
+  set smartindent
+  set statusline=\ %<%F\ [%M%R%H%W%Y,%{&ff}]\ \ %=\ line:%l/%L\ col:%c\ \ \ %p%%\ 
+  set textwidth=512
+  set title titlestring=\[\ %t\ \]\ VIM
+  set viminfo='20,\"80       " read/write a .viminfo file, don't store more than 80 lines of registers
+  set visualbell t_vb=
+
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    " "set paste' is not very good (!)
+    "
+    "        When the 'paste' option is switched on (also when it was already on):
+    "                - mapping in Insert mode and Command-line mode is disabled
+    "                - abbreviations are disabled
+    "                - 'autoindent' is reset
+    "                - 'expandtab' is reset
+    "                - 'formatoptions' is used like it is empty
+    "                - 'revins' is reset
+    "                - 'ruler' is reset
+    "                - 'showmatch' is reset
+    "                - 'smartindent' is reset
+    "                - 'smarttab' is reset
+    "                - 'softtabstop' is set to 0
+    "                - 'textwidth' is set to 0
+    "                - 'wrapmargin' is set to 0
+    "        These options keep their value, but their effect is disabled:
+    "                - 'cindent'
+    "                - 'indentexpr'
+    "                - 'lisp'
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+" Not sure where this get used
+  let &titleold = hostname()
+
+" Ignore whitespace differences in vimdiff..
+  if &diff
+    set diffopt+=iwhite
+  endif
+
+" Remember position from previous session
+  if has("autocmd")
+    autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+  endif
+
+" Enable backups
+
+"   NOTE: Double trailing slash feature for 'set backupdir' won't work until this
+"   known issue is fixed: https://github.com/vim/vim/issues/179 (last update: 2015)
+
+  set backup
+  set writebackup
+
+  if has("msdos") || has("win32") || has("win64")
+
+    let BKUPDIR=$HOME.'/.vim/bkupdir//'
+    let &backupdir=BKUPDIR
+
+    if !isdirectory(BKUPDIR)
+      call mkdir(BKUPDIR, "p")
+    endif
+
+  else
+
+    let MYVIMDIR=$HOME.'/.vim'
+    if !isdirectory(MYVIMDIR)
+      let MYVIMDIR=$HOME.'/.rbyers-JUNK-deleteme-now'
+      if !isdirectory(MYVIMDIR)
+        let MYVIMDIFR='/tmp'
+      endif
+    endif
+
+    let BKUPDIR=MYVIMDIR.'/bkupdir'
+
+    if !isdirectory(BKUPDIR)
+      :echo BKUPDIR 'does not exist. Attempt to mkdir..'
+      call mkdir(BKUPDIR, "p")
+    endif
+
+    let &backupdir=BKUPDIR
+
+  endif
+
+" Enable undo files
+
+  set undofile
+  set undolevels=1000
+  set undoreload=10000
+
+  if has("msdos") || has("win32") || has("win64")
+
+    let UNDODIR=$HOME.'/.vim/undodir'
+    let &undodir=UNDODIR
+
+    if !isdirectory(UNDODIR)
+      call mkdir(UNDODIR, "p")
+    endif
+
+  else
+
+    let UNDODIR=MYVIMDIR.'/undodir'
+    let &undodir=UNDODIR
+
+    if !isdirectory(UNDODIR)
+      call mkdir(UNDODIR, "p")
+    endif
+
+  endif
+
+"   +------------------------+
+"---| Syntax and colorscheme |--------------------------------------------------
+"   +------------------------+
+
+" FWIW, I do not like these colorschemes
+"    blue, darkblue, default, delek, desert, morning,
+"    murphy, peachpuff, shine, slate, torte, zellner
+"
+" But I do like these
+"    elflord, evening, koehler, pablo, ron
+
+  syntax enable
+
+  colorscheme pablo
+
+  highlight StatusLine cterm=reverse ctermfg=blue ctermbg=green gui=bold guifg=blue guibg=green
+  highlight StatusLineNC cterm=reverse ctermfg=blue ctermbg=green gui=bold guifg=blue guibg=green
+  highlight clear Todo
+
+" Change Special and Comment because the defaults suck in the pablo scheme
+  highlight Special term=bold ctermfg=12 guifg=#00aaff
+  highlight Comment term=bold ctermfg=12 guifg=#b777a7
+
+" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+" Tweaks for Markdown files (from "https://secluded.site/vim-as-a-markdown-editor/)
+"
+" Actually, the commented-out lines are because they're set already by the global vimrc
+
+" autocmd BufNewFile,BufRead *.md set filetype=markdown
+
+" Hide and format markdown elements like **bold**
+" autocmd FileType markdown set conceallevel=2
+
+" Highlight the line the cursor is on
+autocmd FileType markdown set cursorline
+
+" Enable markdown folding
+let g:markdown_folding = 1
+let g:markdown_fenced_languages = ['vim', 'yaml', 'python', 'bash=sh', 'sql', 'git', 'make', 'html', 'css', 'javascript', 'js=javascript', 'json=javascript', 'xml']
+
+" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+" EXAMPLES
+" From https://developer.ibm.com/technologies/linux/articles/l-vim-script-1/
+"
+" vimscripting is by no means restricted to Normal mode.
+" You can also use the imap or iabbrev commands to set
+" up key-mappings or abbreviations that can be used
+" while inserting text. For example:
+"
+" imap <silent> <C-D><C-D> <C-R>=strftime("%Y-%m%d-%H%M%S")<CR>
+" imap <silent> <C-T><C-T> <C-R>=strftime("%l:%M %p")<CR>
+"
+" function! Ggetlinee()
+"     let line = getline('.')
+"     echo line
+" endfunction
+"
+" " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+" " Ctrl-Y replaces current char with same-column char
+" " from previous non-empty line.
+" "
+" " (the built-in insert mode Ctrl-Y doesn't work ever
+" " previous line(s) are blank)
+"
+" function! LookUpwards()
+"
+"    "Locate current column and preceding line from which to copy...
+"    let column_num      = virtcol('.')
+"    let target_pattern  = '\%' . column_num . 'v.'
+"    let target_line_num = search(target_pattern . '*\S', 'bnW')
+"
+"    "If target line found, return vertically copied character...
+"    if !target_line_num
+"       return ""
+"    else
+"       return matchstr(getline(target_line_num), target_pattern)
+"    endif
+"
+" endfunction
+"
+" imap <silent> <C-Y> <C-R><C-R>=LookUpwards()<CR>
+
+" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+" No longer like/use these
+
+"let &titleold = hostname()     (why was I using this???)
+"noremap! jk <Esc>              (quick way to escape out of insert mode)
+"set comments=#
+"set directory=/tmp             (used to keep .swp files elsewhere)
+"set noautoindent
+"set nopaste
+"set pastetoggle=<C-J>
+"set nocindent
+"set smarttab
+"set swapfile                   (this is the default anyway)
+"set tabstop=4
+"set guifont=-misc-fixed-medium-r-normal--14-130-75-75-c-70-iso8859-1
+"
+" Keyword Help - Show vim help for the keyword under cursor
+" (PROBLEM: this makes any typing with the letter k take way too long. Use a different key mapping)
+" noremap kwh "zyiw:exe "h ".@z.""<CR>
+"
+"I'm tired of showing trailing spaces
+"set listchars=precedes:<,extends:>,trail:`,tab:>`
+"
+"Matchit is for HTML, but it breaks other match operations based on '%'
+"
+" if has("msdos") || has("win32") || has("win64")
+"   :source c:\Program\ Files\ (x86)\Vim\vim82\pack\dist\opt\matchit\plugin\matchit.vim
+" endif
+

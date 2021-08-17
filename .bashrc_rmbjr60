@@ -1,0 +1,135 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This is .bashrc_rmbjr60
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+addTo()
+{
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # TODO: Don't need to use a case statement. Instead do something like...
+    #
+    #     eval VAL_TO_CHECK=\$$VAR_NAME_TO_CHECK
+    #
+    # But how to *set* a variable's value???
+    #
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    case "$1" in
+
+        "PATH")
+            [ "$PATH" = "" ] && COLON="" || COLON=":"
+            [ -d $2 ] && export PATH="$2$COLON$PATH"
+        ;;
+
+        "MANPATH")
+            [ "$MANPATH" = "" ] && COLON="" || COLON=":"
+            [ -d $2 ] && export MANPATH="$2$COLON$MANPATH"
+        ;;
+
+        "PYTHONPATH")
+            [ "$PYTHONPATH" = "" ] && COLON="" || COLON=":"
+            [ -d $2 ] && export PYTHONPATH="$2$COLON$PYTHONPATH"
+        ;;
+
+    esac
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+addToPath()
+{
+    [ "$PATH" = "" ] && COLON="" || COLON=":"
+    [ -d $1 ] && export PATH="$1$COLON$PATH"
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+addToManpath()
+{
+    [ "$MANPATH" = "" ] && COLON="" || COLON=":"
+    [ -d $1 ] && export MANPATH="$1$COLON$MANPATH"
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+export HISTCONTROL=ignoredups
+export HISTSIZE=25252
+export HISTFILESIZE=${HISTSIZE}
+export HISTTIMEFORMAT="[%Y-%m%d-%H%M%S] "
+export LANG=en_US.UTF-8
+export LESS="-e-F-g-M-n-Q-R-s-X"
+export MYPROMPTRC=~/.promptrc
+[ -f "$MYPROMPTRC" ] && . "$MYPROMPTRC"
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Ignore case in many bash comparisons
+
+shopt -s nocasematch
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# WARNING: I was unable to use "~" when calling addTo. (why???).
+# Use $HOME instead
+
+addTo PATH "/opt/cisco/anyconnect/bin"
+addTo PATH "/snap/pycharm-community/226/bin"
+addTo PATH "$HOME/bin"
+addTo PATH "."
+
+addTo MANPATH "/usr/share/doc/python3-pip/man"
+addTo MANPATH "/usr/lib/jvm/java-14-openjdk-amd64/man"
+addTo MANPATH "/usr/local/share/man"
+addTo MANPATH "/usr/share/man"
+
+addTo PYTHONPATH "$HOME/.local/lib/python3.8/site-packages"
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#-- Workaround for autocompletion for cd builtin
+#-- https://unix.stackexchange.com/questions/307008/autocompletion-with-wildcards-for-cd-in-bash/420600#420600
+
+compopt -o bashdefault cd
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Use EXCLUDEPATHS in find commands if desired
+#
+# For example..
+#
+# find directory(s) $EXCLUDEPATHS -type f -name '*.py' -exec grep -Ei def.test_ {} /dev/null \;
+
+export EXCLUDEPATHS="\
+    -path venv -prune -false \
+ -o -path logs -prune -false \
+ -o -path .pytest_cache -prune -false -o"
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+case $HOSTNAME in
+
+    rmbinspiro2018) :
+    ;;
+
+    rb-el6-6283767) :
+    export CM="module load /jenkins/workspace/repos/dsptk/cmake-deps.module"
+    ;;
+
+esac
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# git completion
+
+[ -f $HOME/.git-completion.bash ] && . $HOME/.git-completion.bash
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# (vboxmanage not currently installed as of 2020-10-03)
+# #-- Load bash completions for vboxmanage..
+# COMPLETIONFILE=~/etc/bash_completion.d/vboxmanage-bash-completion-master/VBoxManage
+# [ -f "$COMPLETIONFILE" ] && . $COMPLETIONFILE
+
+#-----------------------------------------------------------------------------
+#-- Workaround for autocompletion for gv alias which had been redefined
+#-- in /usr/share/bash-completion/bash_completion to only allow
+#-- completion to files ending in .ps, .pdf, .gz, etc.
+#--
+#---- Actually, the workaround isn't working. So instead I editted the
+#---- bash_completion file directly, removing the 'gv' entry completely)
+#----
+#---- Attempted workaround was..
+#----
+#----   compopt -o bashdefault gv
+#----   complete -F _filedir_xspec gv
+#--
+#-----------------------------------------------------------------------------

@@ -1,0 +1,31 @@
+$if Bash
+    Space: magic-space
+    set history-size 12000
+    set completion-map-case on
+$endif
+
+  #
+  #-- Maybe these?
+  #
+  # insert-completions
+  # glob-expand-word
+  # glob-complete-word
+  # glob-list-expansions
+  #
+  # Control-x: shell-expand-line
+  # Control-x: history-expand-line
+  # Control-x: alias-expand-line
+  # Control-x: history-and-alias-expand-line
+  #
+  #-- This is working, no need to set it here?
+  #  Control-x: glob-expand-word
+  #
+  #-- See also my inputrc example in public_html/sh
+
+
+  #zzz   set mark-directories on
+  #zzz   set mark-symlinked-directories on
+  #zzz   set completion-ignore-case off
+  #zzz   set show-all-if-ambiguous on
+  #zzz   set insert-completions on
+  #zzz   Control-x: glob-expand-word

@@ -1,0 +1,45 @@
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+[core]
+    autocrlf = input
+
+[merge]
+    ff = false
+
+[pull]
+    rebase = preserve
+
+[rebase]
+    autoSquash = true
+    autoStash = true
+
+[alias]
+    repull = !git pull --rebase
+
+[user]
+	name = robertbyers1111
+	email = robertbyers1111@gmail.com
+
+[diff]
+    tool = meld
+
+[difftool]
+    prompt = false
+
+[difftool "meld"]
+    cmd = meld "$LOCAL" "$REMOTE"
+
+[merge]
+    tool = meld
+
+[mergetool "meld"]
+    cmd = meld "$LOCAL" "$MERGED" "$REMOTE" --output "$MERGED"
+
+[completion]
+    # QUESTION: How to get completion of the -- options to work for these???
+    commands = ls-files ls-tree name-rev rev-parse show-tree var
+
