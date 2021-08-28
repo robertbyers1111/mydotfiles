@@ -48,6 +48,7 @@ addToManpath()
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+export BASHRCTRACE__TILDE_BASHRC_RMBJR60=~/.bashrc_rmbjr60
 export HISTCONTROL=ignoredups
 export HISTSIZE=25252
 export HISTFILESIZE=${HISTSIZE}
@@ -103,7 +104,8 @@ case $HOSTNAME in
     ;;
 
     rb-el6-6283767) :
-    export CM="module load /jenkins/workspace/repos/dsptk/cmake-deps.module"
+        export CM="module load /jenkins/workspace/repos/dsptk/cmake-deps.module"
+        export PATH=/mtkoss/como/tools/git/2.32.0/bin:${PATH}
     ;;
 
 esac

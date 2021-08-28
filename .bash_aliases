@@ -30,6 +30,13 @@ export PUBLIC_HTML=$BBHOME/public_html
 export MEGA=$BBHOME/MEGA/MEGAsync
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function .ll()
+{
+    /bin/ls --time-style="+%Y-%m-%d %H:%M:%S" --group-directories-first -lLFANGv "$*"
+    #bin/ls --time-style="+%Y-%m-%d %H:%M:%S" --group-directories-first -lLFANGv $* | $BBHOME/bin/commify
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # These *should* work anywhere
 
 alias -- -="cd -"
@@ -65,12 +72,14 @@ alias tf="tail -250f"
 alias wcl="wc -l"
 alias which="type"
 
+alias .256sum="sha256sum"
 alias .DisplayFilterForWireshark=" echo \"!dns&&!igmp&&!tcp&&!ipv6&&!cdp&&!nbns&&!browser&&!lldp\""
 alias .PROMPT_simplify='export PS1="% "'
 alias .alias="unalias -a ; gvim -f ~/.bash_aliases ; . ~/.bash_aliases"
 alias .aptup="sudo apt update && sudo apt upgrade -y"
 alias .bashrc="vim $BBHOME/.bashrc_rmbjr60"
 alias .bin="pushd $BBHOME/bin"
+alias .btc="sudo bluetoothctl"
 alias .clipboardgvim="gvim -s ~/bin/clipboardpaste.vim"
 alias .commify="$BBHOME/bin/commify"
 alias .diff="meld"
@@ -83,16 +92,18 @@ alias .ld="l | grep ^d"
 alias .lsof_tcp="sudo lsof -i -P -n | sort -k1.56 -Vru"
 alias .myfixXtermTitle=". $BBHOME/bin/UTY_myfixXtermTitle.sh"
 alias .now='now -nc'
-alias .po='popd 2>&1 | grep -Ev "directory stack empty" 2>&1'
-alias .pu="pushd"
+alias .pd="popd ; dirs | sed 's/^[^ 	][^ 	]*//' | sed 's/^$/(dir stack now empty)/' | sed 's/^[^(].*//'"
+#lias .po='popd 2>&1 | grep -Ev "directory stack empty" 2>&1'
+#lias .pu="pushd"
 alias .s256sum="sha256sum"
 alias .showmount="findmnt"
-alias .src="pushd $MEGA/source/repos"
 alias .sudo_bash="/usr/bin/sudo -i /bin/bash"
 alias .tab="echo Ctrl-V+tab"
 alias .tf="tail -250f"
 alias .tmp="pushd $BBHOME/tmp"
 alias .vimrc="gvim $BBHOME/.vimrc_rbyers"
+
+# git aliases
 
 SAVEPATH=$PATH
 export PATH=/mtkoss/como/tools/git/2.32.0/bin:${PATH}
@@ -106,6 +117,10 @@ export PATH=/mtkoss/como/tools/git/2.32.0/bin:${PATH}
     # (until I get UTY_grepository.sh imported to RB-EL6)
     alias .grepository="git rev-parse --show-toplevel"
     #lias .grepository="UTY_grepository.sh"
+
+    [ -f $PUBLIC_HTML/git/git-log-formatting.sh ] && {
+        alias .glogformatting='$PUBLIC_HTML/git/git-log-formatting.sh'
+    }
 
     [ -f $PUBLIC_HTML/github/howtos/gitnotes/gitnotes.md ] && {
         alias .gitnotes='retext --preview $PUBLIC_HTML/github/howtos/gitnotes/gitnotes.md &'
@@ -122,8 +137,8 @@ export PATH=$SAVEPATH
 
 /usr/bin/which --all screen > /dev/null 2>&1
 [ $? -eq 0 ] && {
-    alias .slist="screen -list"
-    alias .srestore="screen -R"
+    alias .sl="screen -list"
+    alias .sr="screen -R"
 }
 
 # public_html
@@ -177,6 +192,7 @@ case $HOSTNAME in
         alias .ndpushd="pushd /media/rmbjr60/Silver_Blue_2T/AppData/Local/GitHub/NonCached_a2a65d850739bc178b2eb13c3e2a9faafea2f9143c0/2move2/2move2/2move2/2move2/2move2/2move2/2move3/vids"
         alias .pdfreader="xreader"
         alias .resumes="pushd $BBHOME/JobHunt2020/resumes"
+        alias .src="pushd $MEGA/source/repos"
         alias .videos="pushd $BBHOME/Videos"
         alias .zubuntulinux=.8758l
     ;;
@@ -185,8 +201,9 @@ case $HOSTNAME in
         alias .cmakeload='. $BBHOME/bin/UTY_cmakeload.sh'
         alias .ct='export JWRC1CT=/jenkins/workspace/repos/c1/coretracer && mkdir $JWRC1CT 2>&1 > /dev/null ; pushd $JWRC1CT'
         alias gvim='/usr/bin/gvim -geometry=184x45+4+118'
-        alias .jb='ct; jenkinsEL6Build.sh --verbose --host x86_64-redhat-linux'
-        alias .invoke_runner_for_jenkinsEL6Build='. ~/bin/.runner_for_jenkinsEL6Build.sh'
+        alias .ctdir='export JWRC1CT=/jenkins/workspace/repos/c1/coretracer && mkdir $JWRC1CT 2>&1 > /dev/null ; pushd $JWRC1CT'
+        alias .ctlaunch='.ctdir; module load Thor/CoreTracer/1.0.0.beta; CoreTracer'
+        alias .jwr='pushd /jenkins/workspace/repos'
         alias .moduleload='module load como/tools/git/ como/tools/emacs/26.1 como/python/3.6.1'
         alias .script='. /home/rbyers/bin/UTY_scriptutil.sh'
         alias .today='pushd ~/working_directory/today'
@@ -211,6 +228,28 @@ case $HOSTNAME in
     ;;
 
 esac
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# PracticePython v0.3
+#
+# practice_python_via_github_uty()
+# {
+#     PYHELPDIR=~/public_html/python
+#     PRACTICEDIR=PracticePython
+#     PRACTICEFULLPATHR=$PYHELPDIR/$PRACTICEDIR
+#     [ ! -d $PRACTICEFULLPATHR ] && {
+#         echo Creating $PRACTICEFULLPATHR
+#         mkdir -p $PRACTICEFULLPATHR
+#         cd $PRACTICEFULLPATHR
+#         cd ..
+#         git clone git@github.com:robertbyers1111/PracticePython.git
+#     }
+#     pushd $PRACTICEFULLPATHR > /dev/null
+#     echo "pwd: `pwd | sed 's@/home/[^/][^/]*/@~/@'`"
+#     git status
+# }
+#
+# alias .practice_python=practice_python_via_github_uty
 
 #-----------------------------------------------------------------------
 #--
