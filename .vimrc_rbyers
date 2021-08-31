@@ -39,6 +39,25 @@ set guioptions+=l
 "
 " plugin 'davidhalter/jedi-vim'
 
+"   +--------------------+
+"---| String Comparisons |-----------------------------------------------------
+"   +--------------------+
+"
+"   expr5 {cmp} expr5
+"
+"   Compare two expr5 expressions, resulting in a 0 if it evaluates to false, or 1
+"   if it evaluates to true.
+"
+"                    use 'ignorecase'    match case    ignore case ~
+"   regexp matches           =~             =~#             =~?
+"   regexp doesn't match    !~              !~#             !~?
+
+    if hostname() =~ "^RmbInspiro"
+        let HN = "RmbInspiro"
+    elseif hostname() =~ "^RB-EL.-"
+        let HN = "RB-EL"
+    endif
+
 "   +----------------+
 "---| Keyboard Stuff |----------------------------------------------------------
 "   +----------------+
