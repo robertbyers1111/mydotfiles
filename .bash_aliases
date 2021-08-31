@@ -4,6 +4,9 @@
 #
 #    alias last2='function _(){ ls -lt $1 |  tail -2; }; _'
 #
+# NOTE: all "/usr/bin" have been shortened to "/bin", which assumes the current OS has implemented the
+# /usr merge project discussed here: https://www.freedesktop.org/wiki/Software/systemd/TheCaseForTheUsrMerge/
+#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 shopt -s nocasematch
@@ -30,13 +33,6 @@ export PUBLIC_HTML=$BBHOME/public_html
 export MEGA=$BBHOME/MEGA/MEGAsync
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function .ll()
-{
-    /bin/ls --time-style="+%Y-%m-%d %H:%M:%S" --group-directories-first -lLFANGv "$*"
-    #bin/ls --time-style="+%Y-%m-%d %H:%M:%S" --group-directories-first -lLFANGv $* | $BBHOME/bin/commify
-}
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # These *should* work anywhere
 
 alias -- -="cd -"
@@ -56,7 +52,7 @@ alias del="rm"
 alias dus="$BBHOME/bin/.dus.sh"
 alias fh="file -h"
 alias grep="grep -E --color=auto"
-alias gwenview="echo .local/share/Trash/{info,files} ; /usr/bin/gwenview ; echo .local/share/Trash/{info,files}"
+alias gwenview="echo .local/share/Trash/{info,files} ; /bin/gwenview ; echo .local/share/Trash/{info,files}"
 alias h2d="hex2dec"
 alias igrep="grep -Ei --color=auto"
 alias lssz="l -Sr | .commify"
@@ -97,7 +93,7 @@ alias .pd="popd ; dirs | sed 's/^[^ 	][^ 	]*//' | sed 's/^$/(dir stack now empty
 #lias .pu="pushd"
 alias .s256sum="sha256sum"
 alias .showmount="findmnt"
-alias .sudo_bash="/usr/bin/sudo -i /bin/bash"
+alias .sudo_bash="/bin/sudo -i /bin/bash"
 alias .tab="echo Ctrl-V+tab"
 alias .tf="tail -250f"
 alias .tmp="pushd $BBHOME/tmp"
@@ -107,23 +103,23 @@ alias .vimrc="gvim $BBHOME/.vimrc_rbyers"
 
 SAVEPATH=$PATH
 export PATH=/mtkoss/como/tools/git/2.32.0/bin:${PATH}
-/usr/bin/which git > /dev/null 2>&1
+/bin/which -a git > /dev/null 2>&1
 [ $? -eq 0 ] && {
 
     alias .git='pushd $MEGA/git'
-    alias .glog="echo ; git branch --verbose ; echo ; git log --graph --oneline --all --decorate=full"
+    alias .gLog="echo ; git branch --verbose ; echo ; git log --graph --oneline --all --decorate=full"
     alias .gs="echo -n Repository:  ; basename \`git rev-parse --show-toplevel\` ; git status"
-    alias .glstree="git ls-tree --long -r"
+    alias .gtree="git ls-tree --long -r"
     # (until I get UTY_grepository.sh imported to RB-EL6)
     alias .grepository="git rev-parse --show-toplevel"
     #lias .grepository="UTY_grepository.sh"
 
     [ -f $PUBLIC_HTML/git/git-log-formatting.sh ] && {
-        alias .glogformatting='$PUBLIC_HTML/git/git-log-formatting.sh'
+        alias .gFormattingOfGitLogResults='$PUBLIC_HTML/git/git-log-formatting.sh'
     }
 
     [ -f $PUBLIC_HTML/github/howtos/gitnotes/gitnotes.md ] && {
-        alias .gitnotes='retext --preview $PUBLIC_HTML/github/howtos/gitnotes/gitnotes.md &'
+        alias .gNotesFoundOnInternetwork='retext --preview $PUBLIC_HTML/github/howtos/gitnotes/gitnotes.md &'
     }
     [ -d $BBHOME/GitAhead ] && {
         alias .gahead="$BBHOME/GitAhead/GitAhead &"
@@ -135,25 +131,25 @@ export PATH=$SAVEPATH
     .  $BBHOME/bin/UTY_practicePython.sh
 }
 
-/usr/bin/which --all screen > /dev/null 2>&1
+/bin/which -a screen > /dev/null 2>&1
 [ $? -eq 0 ] && {
     alias .sl="screen -list"
     alias .sr="screen -R"
 }
 
 # public_html
-alias .History='cat $PUBLIC_HTML/sh/historyExpansion.txt'
+alias .History='cat $PUBLIC_HTML/bash/historyExpansion.txt'
 alias .aptitude='cat $PUBLIC_HTML/unix/aptitude.txt'
 alias .ascii='cat $PUBLIC_HTML/Uncataloged/0-ASCII.txt'
 alias .awk='cat $PUBLIC_HTML/unix/awk.txt'
 alias .bobcheat="pushd $PUBLIC_HTML"
-alias .case='cat $PUBLIC_HTML/sh/caseDemo.sh'
+alias .case='cat $PUBLIC_HTML/bash/caseDemo.sh'
 alias .dpkg='cat $PUBLIC_HTML/unix/dpkg.txt'
-alias .eatargs='cat $PUBLIC_HTML/sh/eatargs.sh'
+alias .eatargs='cat $PUBLIC_HTML/bash/eatargs.sh'
 alias .exitstatus='grep YES $PUBLIC_HTML/unix/grep-cheat.txt'
-alias .for='cat $PUBLIC_HTML/sh/for_viaCmdLine_linuxAndWindows.txt'
+alias .for='cat $PUBLIC_HTML/bash/for_viaCmdLine_linuxAndWindows.txt'
 alias .gitnotes='retext --preview $PUBLIC_HTML/github/howtos/gitnotes/gitnotes.md &'
-alias .grepcheat='cat $PUBLIC_HTML/unix/grep-cheat.txt'
+alias .GrepCheat='cat $PUBLIC_HTML/unix/grep-cheat.txt'
 alias .hash='cat $PUBLIC_HTML/perl/hash.pl'
 alias .installed_apt="( aptitude search \"?installed\" ; echo aptitude search \\\"\?installed\\\" )"
 alias .installed_filt="grep -h status.installed /var/log/dpkg* | grep -v 'installed (lib|crypts|texlive|font|desktop-file-utils|doc-base|ghostscript|gnome-menus:|hicolor-icon-theme|initramfs-tools|linux-|man-db:|mime-support:all|mintsystem:all|pulesaudio|python2|samba-|secureboot|sgml|shared-mime-info|systemd:|tex-common|ubuntu-|uuid-|x11proto-|zlib1g)' | sort -V"
@@ -165,7 +161,7 @@ alias .perl='pushd $PUBLIC_HTML/perl'
 alias .ping='cat $PUBLIC_HTML/unix/ping.txt'
 alias .public='pushd $PUBLIC_HTML'
 alias .py='pushd $PUBLIC_HTML/python'
-alias .read='cat $PUBLIC_HTML/sh/read_file_or_pipe.sh'
+alias .read='cat $PUBLIC_HTML/bash/read_file_or_pipe.sh'
 alias .sh='pushd $PUBLIC_HTML/sh'
 alias .shasum='shasum --algorithm 256'
 alias .sort='cat $PUBLIC_HTML/unix/sort.txt | tail -16'
@@ -173,7 +169,7 @@ alias .ssh='cat $PUBLIC_HTML/unix/ssh.txt'
 alias .Touch='cat $PUBLIC_HTML/unix/touch.txt'
 alias .unix='pushd $PUBLIC_HTML/unix'
 alias .vimhelp='pushd $PUBLIC_HTML/vim'
-alias .while=' cat $PUBLIC_HTML/sh/while.sh'
+alias .while=' cat $PUBLIC_HTML/bash/while.sh'
 alias .xargs='cat $PUBLIC_HTML/unix/xargs.sh'
 alias ,grepcheat='cat $PUBLIC_HTML/unix/grep-cheat.txt'
 alias ,minimal='cat $PUBLIC_HTML/python/minimal.py'
@@ -200,7 +196,7 @@ case $HOSTNAME in
     rb-el*) :
         alias .cmakeload='. $BBHOME/bin/UTY_cmakeload.sh'
         alias .ct='export JWRC1CT=/jenkins/workspace/repos/c1/coretracer && mkdir $JWRC1CT 2>&1 > /dev/null ; pushd $JWRC1CT'
-        alias gvim='/usr/bin/gvim -geometry=184x45+4+118'
+        alias gvim='/bin/gvim -geometry=184x45+4+118'
         alias .ctdir='export JWRC1CT=/jenkins/workspace/repos/c1/coretracer && mkdir $JWRC1CT 2>&1 > /dev/null ; pushd $JWRC1CT'
         alias .ctlaunch='.ctdir; module load Thor/CoreTracer/1.0.0.beta; CoreTracer'
         alias .jwr='pushd /jenkins/workspace/repos'
