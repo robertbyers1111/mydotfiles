@@ -1,0 +1,26 @@
+"------------------------------------------------------------------------------
+" guifont here is ignored if "-guifont=" is set on the command line. Likewise,
+" lines and columns here are ignored if "-geometry=" is set on the command line.
+"
+" From command line, I prefer this (38 lines, 136 columns, x offset 128, y offset 128)
+"
+"    -geometry=38x136+128+128"
+"------------------------------------------------------------------------------
+
+"Need this???
+"set guioptions+=1
+
+if hostname() =~ "^RmbInspiro"
+    set guifont=Ubuntu\ Mono\ Bold\ 12
+    set lines=1000
+    set columns=1000
+elseif hostname() =~ "^RB-EL.-"
+    set guifont=Monospace\ Bold\ 13
+    set lines=38
+    set columns=144
+elseif hostname() =~ "^DS903039"
+    set guifont=Ubuntu\ Mono\ Bold\ 12
+    set lines=12
+    set columns=12
+endif
+
