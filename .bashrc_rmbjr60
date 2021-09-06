@@ -68,7 +68,8 @@ shopt -s nocasematch
 # Use $HOME instead
 
 addTo PATH "/opt/cisco/anyconnect/bin"
-addTo PATH "/snap/pycharm-community/226/bin"
+addTo PATH "/usr/local/go/bin"
+addTo PATH "$HOME/pycharm/bin"
 addTo PATH "$HOME/bin"
 addTo PATH "."
 
@@ -88,9 +89,9 @@ compopt -o bashdefault cd
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Use EXCLUDEPATHS in find commands if desired
 #
-# For example..
+#     For example..
 #
-# find directory(s) $EXCLUDEPATHS -type f -name '*.py' -exec grep -Ei def.test_ {} /dev/null \;
+#     % find path $EXCLUDEPATHS -type f -name '*.py'
 
 export EXCLUDEPATHS="\
     -path venv -prune -false \
