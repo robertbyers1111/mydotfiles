@@ -7,6 +7,8 @@
 # NOTE: all "/usr/bin" have been shortened to "/bin", which assumes the current OS has implemented the
 # /usr merge project discussed here: https://www.freedesktop.org/wiki/Software/systemd/TheCaseForTheUsrMerge/
 #
+# Uhh Oh! RLEL6 never implemented the /usr merge, and Mediatek *still* uses (in 2021) RHEL6 (btw, wtf?)
+#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 shopt -s nocasematch
@@ -24,13 +26,11 @@ case $HOSTNAME in
         export BBHOME=/home/rbyers
         export MTKGIT=/mtkoss/como/tools/git/2.32.0/bin
     ;;
-    IRBT-8758l) :
-        export BBHOME=/home/rbyers
-    ;;
 esac
 
 export PUBLIC_HTML=$BBHOME/public_html
 export MEGA=$BBHOME/MEGA/MEGAsync
+export BBBIN=$BBHOME/bin
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # These *should* work anywhere
@@ -43,13 +43,13 @@ alias ....="cd ../.."
 alias ..="cd .."
 
 alias a2d="ascii2dec"
-alias brm="$BBHOME/bin/.brm.sh"
+alias brm="$BBBIN/.brm.sh"
 alias cols="tput cols"
 alias cp="cp -ip"
 alias d2a="dec2ascii"
 alias d2h="dec2hex"
 alias del="rm"
-alias dus="$BBHOME/bin/.dus.sh"
+alias dus="$BBBIN/.dus.sh"
 alias fh="file -h"
 alias grep="grep -E --color=auto"
 alias gwenview="echo .local/share/Trash/{info,files} ; /bin/gwenview ; echo .local/share/Trash/{info,files}"
@@ -72,29 +72,25 @@ alias .256sum="sha256sum"
 alias .DisplayFilterForWireshark=" echo \"!dns&&!igmp&&!tcp&&!ipv6&&!cdp&&!nbns&&!browser&&!lldp\""
 alias .PROMPT_simplify='export PS1="% "'
 alias .alias="unalias -a ; gvim -f ~/.bash_aliases ; . ~/.bash_aliases"
-alias .aptup="sudo apt update && sudo apt upgrade -y"
 alias .bashrc="vim $BBHOME/.bashrc_rmbjr60"
-alias .bin="pushd $BBHOME/bin"
+alias .bin="pushd $BBBIN"
 alias .btc="sudo bluetoothctl"
-alias .clipboardgvim="gvim -s ~/bin/clipboardpaste.vim"
-alias .commify="$BBHOME/bin/commify"
+alias .clipboardgvim="gvim -s $BBBIN/clipboardpaste.vim"
+alias .commify="$BBBIN/commify"
 alias .diff="meld"
 alias .downloads="pushd $BBHOME/Downloads"
 alias .ffx="firefox&"
 alias .history="history | sort -k1.9 -V | grep -i"
-alias .if="cat ~/bin/if_.txt"
 alias .ifconfig="ifconfig | grep inet\ "
 alias .ld="l | grep ^d"
 alias .lsof_tcp="sudo lsof -i -P -n | sort -k1.56 -Vru"
-alias .myfixXtermTitle=". $BBHOME/bin/UTY_myfixXtermTitle.sh"
+alias .myfixXtermTitle=". $BBBIN/UTY_myfixXtermTitle.sh"
 alias .now='now -nc'
 alias .pd="popd ; dirs | sed 's/^[^ 	][^ 	]*//' | sed 's/^$/(dir stack now empty)/' | sed 's/^[^(].*//'"
-#lias .po='popd 2>&1 | grep -Ev "directory stack empty" 2>&1'
-#lias .pu="pushd"
 alias .s256sum="sha256sum"
+alias .shasum='shasum --algorithm 256'
 alias .showmount="findmnt"
 alias .sudo_bash="/bin/sudo -i /bin/bash"
-alias .tab="echo Ctrl-V+tab"
 alias .tf="tail -250f"
 alias .tmp="pushd $BBHOME/tmp"
 alias .vimrc="gvim $BBHOME/.vimrc_rbyers"
@@ -103,6 +99,7 @@ alias .vimrc="gvim $BBHOME/.vimrc_rbyers"
 
 SAVEPATH=$PATH
 export PATH=/mtkoss/como/tools/git/2.32.0/bin:${PATH}
+
 /bin/which -a git > /dev/null 2>&1
 [ $? -eq 0 ] && {
 
@@ -110,26 +107,39 @@ export PATH=/mtkoss/como/tools/git/2.32.0/bin:${PATH}
     alias .gLog="echo ; git branch --verbose ; echo ; git log --graph --oneline --all --decorate=full"
     alias .gs="echo -n Repository:  ; basename \`git rev-parse --show-toplevel\` ; git status"
     alias .gtree="git ls-tree --long -r"
-    # (until I get UTY_grepository.sh imported to RB-EL6)
     alias .grepository="git rev-parse --show-toplevel"
-    #lias .grepository="UTY_grepository.sh"
 
-    [ -f $PUBLIC_HTML/git/git-log-formatting.sh ] && {
-        alias .gFormattingOfGitLogResults='$PUBLIC_HTML/git/git-log-formatting.sh'
+    # alias .grepository="UTY_grepository.sh"
+    # (...until I get UTY_grepository.sh imported to RB-EL6)
+
+    [ -d $PUBLIC_HTML/git ] && {
+
+        alias ,githelp='pushd $PUBLIC_HTML/git'
+
+        [ -f $PUBLIC_HTML/git/git-log-formatting.sh ] && {
+            alias ,gFormattingOfGitLogResults='$PUBLIC_HTML/git/git-log-formatting.sh'
+        }
+
+        [ -f $PUBLIC_HTML/github/howtos/gitnotes/gitnotes.md ] && {
+            alias ,gNotesFoundOnInternetwork='retext --preview $PUBLIC_HTML/github/howtos/gitnotes/gitnotes.md &'
+        }
     }
 
-    [ -f $PUBLIC_HTML/github/howtos/gitnotes/gitnotes.md ] && {
-        alias .gNotesFoundOnInternetwork='retext --preview $PUBLIC_HTML/github/howtos/gitnotes/gitnotes.md &'
-    }
     [ -d $BBHOME/GitAhead ] && {
         alias .gahead="$BBHOME/GitAhead/GitAhead &"
     }
 }
 export PATH=$SAVEPATH
 
-[ -f $BBHOME/bin/UTY_practicePython.sh ] && {
-    .  $BBHOME/bin/UTY_practicePython.sh
+# Python
+
+alias .py='pushd $PUBLIC_HTML/python'
+alias ,minimal_python='cat $PUBLIC_HTML/python/minimal.py'
+[ -f $BBBIN/UTY_practicePython.sh ] && {
+    .  $BBBIN/UTY_practicePython.sh
 }
+
+# screen
 
 /bin/which -a screen > /dev/null 2>&1
 [ $? -eq 0 ] && {
@@ -137,47 +147,52 @@ export PATH=$SAVEPATH
     alias .sr="screen -R"
 }
 
-# public_html
-alias .History='cat $PUBLIC_HTML/bash/historyExpansion.txt'
-alias .aptitude='cat $PUBLIC_HTML/unix/aptitude.txt'
-alias .ascii='cat $PUBLIC_HTML/Uncataloged/0-ASCII.txt'
-alias .awk='cat $PUBLIC_HTML/unix/awk.txt'
-alias .bobcheat="pushd $PUBLIC_HTML"
-alias .case='cat $PUBLIC_HTML/bash/caseDemo.sh'
-alias .dpkg='cat $PUBLIC_HTML/unix/dpkg.txt'
-alias .eatargs='cat $PUBLIC_HTML/bash/eatargs.sh'
-alias .exitstatus='grep YES $PUBLIC_HTML/unix/grep-cheat.txt'
-alias .for='cat $PUBLIC_HTML/bash/for_viaCmdLine_linuxAndWindows.txt'
-alias .gitnotes='retext --preview $PUBLIC_HTML/github/howtos/gitnotes/gitnotes.md &'
-alias .GrepCheat='cat $PUBLIC_HTML/unix/grep-cheat.txt'
-alias .hash='cat $PUBLIC_HTML/perl/hash.pl'
+# gnuplot
+
+/bin/which -a gnuplot > /dev/null 2>&1
+[ $? -eq 0 ] && {
+    [ -f $PUBLIC_HTML/gnuplot/gnuplot_help.txt ] && alias ,gnuplothelp="cat $PUBLIC_HTML/gnuplot/gnuplot_help.txt"
+}
+
+# apt, aptitude and dpkg
+
 alias .installed_apt="( aptitude search \"?installed\" ; echo aptitude search \\\"\?installed\\\" )"
 alias .installed_filt="grep -h status.installed /var/log/dpkg* | grep -v 'installed (lib|crypts|texlive|font|desktop-file-utils|doc-base|ghostscript|gnome-menus:|hicolor-icon-theme|initramfs-tools|linux-|man-db:|mime-support:all|mintsystem:all|pulesaudio|python2|samba-|secureboot|sgml|shared-mime-info|systemd:|tex-common|ubuntu-|uuid-|x11proto-|zlib1g)' | sort -V"
 alias .installed_unfilt="grep -h status.installed /var/log/dpkg* | sort -V"
-alias .keyboardshortcuts='retext --preview $PUBLIC_HTML/linux-mint/gnome-keyboard-shortcuts.md &'
-alias .mktemp='cat $PUBLIC_HTML/unix/mktemp.txt'
+alias .aptup="sudo apt update && sudo apt upgrade -y"
 alias .notinstalled="( echo aptitude search \\\"\?not\(\?installed\)\\\" ; aptitude search \"?not(?installed)\" ; echo aptitude search \\\"\?not\(\?installed\)\\\" )"
-alias .perl='pushd $PUBLIC_HTML/perl'
-alias .ping='cat $PUBLIC_HTML/unix/ping.txt'
+alias ,aptitude='cat $PUBLIC_HTML/unix/aptitude.txt'
+alias ,dpkg='cat $PUBLIC_HTML/unix/dpkg.txt'
+
+# public_html
+
 alias .public='pushd $PUBLIC_HTML'
-alias .py='pushd $PUBLIC_HTML/python'
-alias .read='cat $PUBLIC_HTML/bash/read_file_or_pipe.sh'
-alias .sh='pushd $PUBLIC_HTML/sh'
-alias .shasum='shasum --algorithm 256'
-alias .sort='cat $PUBLIC_HTML/unix/sort.txt | tail -16'
-alias .ssh='cat $PUBLIC_HTML/unix/ssh.txt'
-alias .Touch='cat $PUBLIC_HTML/unix/touch.txt'
 alias .unix='pushd $PUBLIC_HTML/unix'
 alias .vimhelp='pushd $PUBLIC_HTML/vim'
-alias .while=' cat $PUBLIC_HTML/bash/while.sh'
-alias .xargs='cat $PUBLIC_HTML/unix/xargs.sh'
+alias ,GrepCheat='cat $PUBLIC_HTML/unix/grep-cheat.txt'
+alias ,History='cat $PUBLIC_HTML/bash/historyExpansion.txt'
+alias ,Touch='cat $PUBLIC_HTML/unix/touch.txt'
+alias ,ascii='cat $PUBLIC_HTML/Uncataloged/0-ASCII.txt'
+alias ,awk='cat $PUBLIC_HTML/unix/awk.txt'
+alias ,bobcheat="pushd $PUBLIC_HTML"
+alias ,case='cat $PUBLIC_HTML/bash/caseDemo.sh'
+alias ,eatargs='cat $PUBLIC_HTML/bash/eatargs.sh'
+alias ,exitstatus='grep YES $PUBLIC_HTML/unix/grep-cheat.txt'
+alias ,for='cat $PUBLIC_HTML/bash/for_viaCmdLine_linuxAndWindows.txt'
 alias ,grepcheat='cat $PUBLIC_HTML/unix/grep-cheat.txt'
-alias ,minimal='cat $PUBLIC_HTML/python/minimal.py'
+alias ,if="cat $BBBIN/if_.txt"
+alias ,keyboardshortcuts='retext --preview $PUBLIC_HTML/linux-mint/gnome-keyboard-shortcuts.md &'
+alias ,mktemp='cat $PUBLIC_HTML/unix/mktemp.txt'
+alias ,read='cat $PUBLIC_HTML/bash/read_file_or_pipe.sh'
+alias ,sort='cat $PUBLIC_HTML/unix/sort.txt | tail -16'
+alias ,ssh='cat $PUBLIC_HTML/unix/ssh.txt'
+alias ,tab="echo Ctrl-V+tab"
+alias ,while=' cat $PUBLIC_HTML/bash/while.sh'
+
+# Hostname-specific alieases
 
 case $HOSTNAME in
     RmbInspiro2018) :
-        alias .6780l="ssh -X rbyers@irbt-6780l"
-        alias .8758l="ssh -Yvvv -E ~/.ssh/logs/ssh-\`date +%Y-%m%d-%H%M%S-%N\`.log irobert@irbt-8758l"
         alias .314159="pushd $MEGA/314159"
         alias .copyq="flatpak run com.github.hluk.copyq"
         alias .fg="firefox --no-remote -P funiculargoat &"
@@ -187,40 +202,22 @@ case $HOSTNAME in
         alias .ndphotofind="cat /media/rmbjr60/Seagate\ Backup\ Plus\ Drive/AppData/Local/GitHub/NonCached_a2a65d850739bc178b2eb13c3e2a9faafea2f9143c0/INDEX.txt | grep -Eiv \"\.mkv|\.iso|\.wmv|\.avi\" | grep -i "
         alias .ndpushd="pushd /media/rmbjr60/Silver_Blue_2T/AppData/Local/GitHub/NonCached_a2a65d850739bc178b2eb13c3e2a9faafea2f9143c0/2move2/2move2/2move2/2move2/2move2/2move2/2move3/vids"
         alias .pdfreader="xreader"
-        alias .resumes="pushd $BBHOME/JobHunt2020/resumes"
+        alias .resumes="pushd $BBHOME/JobHunt2021/resumes"
         alias .src="pushd $MEGA/source/repos"
         alias .videos="pushd $BBHOME/Videos"
-        alias .zubuntulinux=.8758l
     ;;
 
     rb-el*) :
-        alias .cmakeload='. $BBHOME/bin/UTY_cmakeload.sh'
+        alias .cmakeload='. $BBBIN/UTY_cmakeload.sh'
         alias .ct='export JWRC1CT=/jenkins/workspace/repos/c1/coretracer && mkdir $JWRC1CT 2>&1 > /dev/null ; pushd $JWRC1CT'
         alias gvim='/bin/gvim -geometry=184x45+4+118'
         alias .ctdir='export JWRC1CT=/jenkins/workspace/repos/c1/coretracer && mkdir $JWRC1CT 2>&1 > /dev/null ; pushd $JWRC1CT'
         alias .ctlaunch='.ctdir; module load Thor/CoreTracer/1.0.0.beta; CoreTracer'
         alias .jwr='pushd /jenkins/workspace/repos'
         alias .moduleload='module load como/tools/git/ como/tools/emacs/26.1 como/python/3.6.1'
-        alias .script='. /home/rbyers/bin/UTY_scriptutil.sh'
-        alias .today='pushd ~/working_directory/today'
+        alias .today='pushd $BBHOME/working_directory/today'
         #lias .cmake_module='echo moudule load /jenkins/workspace/repos/dsptk/cmake-deps.module'
         #lias .search_logfile_for_errors='gvim -s ~/bin/searchfor_ERROR.vim'
-    ;;
-
-    irbt-8758l) :
-        alias .adhoc="pushd ~/adhoc"
-        alias .glog="echo ; git branch --verbose ; echo ; git log --graph --oneline --all --decorate=full"
-        alias .gpor="git pull origin rabbit-dev"
-        alias .gstatus="git status"
-        alias .gvim_dev_log="gvim -s ~/bin/searchfor_ERROR.vim dev_??.??_??-??-??_*.log"
-        alias .logdir=". ~/bin/.gotolatestlogdir.sh"
-        alias .nd=".switchgit"
-        alias .nightlies="pushd ~/nightlies"
-        alias .pycharm="pycharm-community >> ~/logs/pycharm.log 2>&1 &"
-        alias .rabbit="pushd ~/rabbit"
-        alias .switchgit=". ~/bin/.switchgit.sh"
-        alias .venv=". ~/rabbit/venv/bin/activate ; . ~/.promptrc ; cd ~/rabbit"
-        alias .vivaldi="vivaldi >> ~/logs/vivaldi.log 2>&1 &"
     ;;
 
 esac
@@ -338,6 +335,7 @@ esac
 #   alias .glances="$RMBJR60/bin/UTY_myfixXtermTitle.sh glances; glances --enable-irq --time 5 --process-short-name --fs-free-space"
 #   alias .gv="gvim -geom=999x222"
 #   alias .gzip="gzip -v"
+#   alias .hash='cat $PUBLIC_HTML/perl/hash.pl'
 #   alias .history="cat $PUBLIC_HTML/sh/historyExpansion.txt ; history | grep -i"
 #   alias .if="cat $PUBLIC_HTML/sh/if_.txt"
 #   alias .irobertx="ssh -Y irobert@irobert"
@@ -355,8 +353,12 @@ esac
 #   alias .pycharm="pycharm.sh >> ~/logs/pycharm.log 2>&1 &"
 #   alias .rabbit="pushd ~/iRobot/rabbit"
 #   alias .resumes="pushd $RMBJR60/TeamDrive/Jobs/Resumes/2018"
+#   alias .6780l="ssh -X rbyers@irbt-6780l"
+#   alias .8758l="ssh -Yvvv -E ~/.ssh/logs/ssh-\`date +%Y-%m%d-%H%M%S-%N\`.log irobert@irbt-8758l"
+#   alias .zubuntulinux=.8758l
 #   alias .robotcfg="gvim ~/rabbit/config/robot/ROBOTCFG.py"
 #   alias .rpmcheat="~rmbjr60/public_html/unix/rpm.sh"
+#   alias .script='. $BBHOME/bin/UTY_scriptutil.sh'
 #   alias .scripts="pushd $RMBJR60/akatest/scripts"
 #   alias .splitpide="gvim -geom=999x222 -O2 -s ~/.vim/vimrc_splitpide"
 #   alias .tailhist="history | tail -32"
@@ -368,6 +370,22 @@ esac
 #   alias .ubuntulinux="ssh -J rbyers@irbt-9123m rbyers@ubuntu-linux"
 #   alias .whatami="echo From /a/etc/install.conf.. ; grep INSTALL /a/etc/install.conf ; grep -i true /a/etc/akamai.conf | sort | grep -Ei 'split|smoosh'"
 #   alias .wine_downloads="pushd $RMBJR60/.wine/drive_c/users/rmbjr60/Downloads"
+#
+#   irbt-8758l) :
+#       alias .adhoc="pushd ~/adhoc"
+#       alias .glog="echo ; git branch --verbose ; echo ; git log --graph --oneline --all --decorate=full"
+#       alias .gpor="git pull origin rabbit-dev"
+#       alias .gstatus="git status"
+#       alias .gvim_dev_log="gvim -s ~/bin/searchfor_ERROR.vim dev_??.??_??-??-??_*.log"
+#       alias .logdir=". ~/bin/.gotolatestlogdir.sh"
+#       alias .nd=".switchgit"
+#       alias .nightlies="pushd ~/nightlies"
+#       alias .pycharm="pycharm-community >> ~/logs/pycharm.log 2>&1 &"
+#       alias .rabbit="pushd ~/rabbit"
+#       alias .switchgit=". ~/bin/.switchgit.sh"
+#       alias .venv=". ~/rabbit/venv/bin/activate ; . ~/.promptrc ; cd ~/rabbit"
+#       alias .vivaldi="vivaldi >> ~/logs/vivaldi.log 2>&1 &"
+#   ;;
 #
 #   alias .version='\
 #       printf "\n> python -mplatform\n" ; python -mplatform ;\
