@@ -80,28 +80,20 @@ setHOSTORENV()
     [ "_${VIRTUAL_ENV}" != "_" ] && export HOSTORVENV=${HOSTNAME}-`basename ${VIRTUAL_ENV}` || export HOSTORVENV=${HOSTNAME}
 }
 
-#-------------------------------------------------------------------------------
-# THIS IS NOT WORKING
-# Append current working directory to the command that gets entered into the history
-# NB: Sometimes bash_profile has settings for HISTTIMEFORMAT that override this (!)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This function issues 'history -a' *if* the user's bash_history file has not
+# been updated "recently" (i.e., within HISTORY_THRESHOLD_SECONDS seconds).
 
-cwdUtilityFuncForHistory()
+history_conditional_append()
 {
-    hpwd=$(history 1)                  # Grab the most recent command
-
-    # The next line works only if HISTTIMEFORMAT=[%Y-%m%d-%H%M%S]
-
-    hpwd="${hpwd# *[0-9]*-[0-9]*] }"   # Strip off the history line number and timestamp (surrounded by []s)
-
-    if [[ ${hpwd%% *} == "cd" ]]       # If it's a cd command, we want the old directory
-    then                               # so the comment matches other commands "where *were* you when this was done?"
-        cwd=$OLDPWD
-    else
-        cwd=$PWD
-    fi
-    history -s "### $cwd"
+    HISTORY_THRESHOLD_SECONDS=30
+    local NOW=$EPOCHSECONDS
+    [ _$HISTORY_APPENDED = _ ] && HISTORY_APPENDED=$NOW
+    [ $(($NOW - $HISTORY_APPENDED)) -gt $HISTORY_THRESHOLD_SECONDS ] && {
+        history -a
+        HISTORY_APPENDED=$NOW
+    }
 }
-
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # This will be set to be the prompt command
@@ -199,11 +191,12 @@ prompt_command() {
 
     echo -ne "\033]0;`pwd | sed 's@.*/\([^/][^/]*/[^/][^/]*/[^/][^/]*\)@\1@'`\007"
 
-    #- Finally, update the prompt
+    #- Finally, update the prompt (and maybe the history file too)
 
     WORKINGDIR='$(pwd | sed "s@.*/\([^/][^/]*/[^/][^/]*\)@\1@")'
     TIME="\t"
     export PS1="${PROMPT_COLOR}($HOSTORVENV) $WORKINGDIR $TIME$NORMAL$ENDCHAR "
+    history_conditional_append
 
 }
 
