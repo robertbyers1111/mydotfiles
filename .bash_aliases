@@ -104,7 +104,7 @@ export PATH=/mtkoss/como/tools/git/2.32.0/bin:${PATH}
 [ $? -eq 0 ] && {
 
     alias .git='pushd $MEGA/git'
-    alias .gLog="echo ; git branch --verbose ; echo ; git log --graph --oneline --all --decorate=full"
+    alias .gl1="echo ; git branch --verbose ; echo ; git log --graph --oneline --all --decorate=full"
     alias .gs="echo -n Repository:  ; basename \`git rev-parse --show-toplevel\` ; git status"
     alias .gtree="git ls-tree --long -r"
     alias .grepository="git rev-parse --show-toplevel"
