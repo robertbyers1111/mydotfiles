@@ -41,7 +41,6 @@ alias ........="cd ../../../.."
 alias ......="cd ../../.."
 alias ....="cd ../.."
 alias ..="cd .."
-alias .="l"
 
 alias a2d="ascii2dec"
 alias brm="$BBBIN/.brm.sh"
