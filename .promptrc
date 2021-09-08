@@ -69,6 +69,7 @@ setENDCHAR()
       && export ENDCHAR="##" \
       || export ENDCHAR=">"
 }
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # This will set HOSTORVENV to current hostname combined with virtual
 # environment. If not in a virtual environment, HOSTORVENV is set to
@@ -78,6 +79,19 @@ setHOSTORENV()
 {
     [ "_${HOSTNAME}" = "_" ] && export HOSTNAME=`hostname`
     [ "_${VIRTUAL_ENV}" != "_" ] && export HOSTORVENV=${HOSTNAME}-`basename ${VIRTUAL_ENV}` || export HOSTORVENV=${HOSTNAME}
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This will set GITBRANCH to current git branch *if* our current directory
+# happens to be part of a git repository.
+
+setGITBRANCH()
+{
+    # (__git_ps1 is from ~/.git_prompt.sh)
+    GITBRANCH=$(__git_ps1 "(%s)")
+
+    # Add a trailing space if we found that we're in a branch
+    [ _${GITBRANCH} != _ ] && GITBRANCH="${GITBRANCH} "
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -191,11 +205,15 @@ prompt_command() {
 
     echo -ne "\033]0;`pwd | sed 's@.*/\([^/][^/]*/[^/][^/]*/[^/][^/]*\)@\1@'`\007"
 
+    #-- Add the current git branch if our current directory happens to be part of a git repository
+
+    setGITBRANCH
+
     #- Finally, update the prompt (and maybe the history file too)
 
     WORKINGDIR='$(pwd | sed "s@.*/\([^/][^/]*/[^/][^/]*\)@\1@")'
     TIME="\t"
-    export PS1="${PROMPT_COLOR}($HOSTORVENV) $WORKINGDIR $TIME$NORMAL$ENDCHAR "
+    export PS1="${PROMPT_COLOR}($HOSTORVENV) $WORKINGDIR ${GITBRANCH}$TIME$NORMAL$ENDCHAR "
     history_conditional_append
 
 }
