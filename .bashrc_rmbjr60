@@ -112,9 +112,10 @@ case $HOSTNAME in
 esac
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# git completion
+# git completion and git prompt
 
 [ -f $HOME/.git-completion.bash ] && . $HOME/.git-completion.bash
+[ -f $HOME/.git-prompt.sh ] && . $HOME/.git-prompt.sh
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # (vboxmanage not currently installed as of 2020-10-03)
