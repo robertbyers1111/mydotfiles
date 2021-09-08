@@ -104,7 +104,6 @@ export PATH=/mtkoss/como/tools/git/2.32.0/bin:${PATH}
 [ $? -eq 0 ] && {
 
     alias .git='pushd $MEGA/git'
-    alias .gl1="echo ; git branch --verbose ; echo ; git log --graph --oneline --all --decorate=full"
     alias .gs="echo -n Repository:  ; basename \`git rev-parse --show-toplevel\` ; git status"
     alias .gtree="git ls-tree --long -r"
     alias .grepository="git rev-parse --show-toplevel"
@@ -332,6 +331,7 @@ esac
 #   alias .eclipse="$RMBJR60/eclipse/cpp-2020-09/eclipse/eclipse"
 #   alias .findallFiles="sudo find /bin /etc /home /lib* /opt /root /sbin /srv /usr /var"
 #   alias .findhelp="cat $PUBLIC_HTML/unix/find.txt"
+#   alias .gl1="echo ; git branch --verbose ; echo ; git log --graph --oneline --all --decorate=full"
 #   alias .glances="$RMBJR60/bin/UTY_myfixXtermTitle.sh glances; glances --enable-irq --time 5 --process-short-name --fs-free-space"
 #   alias .gv="gvim -geom=999x222"
 #   alias .gzip="gzip -v"
