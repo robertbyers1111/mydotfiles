@@ -33,7 +33,7 @@ setPROMPTCOLORCLASS()
 {
     # First try to use value in HOSTORVENV
 
-    [ _$PROMPTCOLORCLASS = _ ] && {
+    [ "$PROMPTCOLORCLASS" = "" ] && {
         case _${HOSTORVENV} in
             _RmbInspiro2018) export PROMPTCOLORCLASS=RmbInspiro2018 ;;
             _IRBT-8758l)     export PROMPTCOLORCLASS=IRBT-8758l ;;
@@ -45,7 +45,7 @@ setPROMPTCOLORCLASS()
     # If PROMPTCOLORCLASS is still empty (i.e., HOSTORVENV is not set or was unrecognized) this
     # section will use /bin/hostname.
 
-    [ _$PROMPTCOLORCLASS = _ ] && {
+    [ "$PROMPTCOLORCLASS" = "" ] && {
         case _`hostname` in
             _RmbInspiro2018) export PROMPTCOLORCLASS=RmbInspiro2018 ;;
             _IRBT-8758l)     export PROMPTCOLORCLASS=IRBT-8758l ;;
@@ -60,12 +60,12 @@ setPROMPTCOLORCLASS()
 
 setENDCHAR()
 {
-    [ _$USER = _root ] && ISROOT=1 || {
-        [ _$LOGNAME = _root ] && ISROOT=1 || {
-            [ _$USERNAME = _root ] && ISROOT=1
+    [ "$USER" = "root" ] && ISROOT=1 || {
+        [ "$LOGNAME" = "root" ] && ISROOT=1 || {
+            [ "$USERNAME" = "root" ] && ISROOT=1
         }
     }
-    [ _$ISROOT = _1 ] \
+    [ "$ISROOT" = "1" ] \
       && export ENDCHAR="##" \
       || export ENDCHAR=">"
 }
@@ -77,8 +77,8 @@ setENDCHAR()
 
 setHOSTORENV()
 {
-    [ "_${HOSTNAME}" = "_" ] && export HOSTNAME=`hostname`
-    [ "_${VIRTUAL_ENV}" != "_" ] && export HOSTORVENV=${HOSTNAME}-`basename ${VIRTUAL_ENV}` || export HOSTORVENV=${HOSTNAME}
+    [ "${HOSTNAME}" = "" ] && export HOSTNAME=`hostname`
+    [ "${VIRTUAL_ENV}" != "" ] && export HOSTORVENV=${HOSTNAME}-`basename ${VIRTUAL_ENV}` || export HOSTORVENV=${HOSTNAME}
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -91,7 +91,7 @@ setGITBRANCH()
     GITBRANCH=$(__git_ps1 "(%s)")
 
     # Add a trailing space if we found that we're in a branch
-    [ _${GITBRANCH} != _ ] && GITBRANCH="${GITBRANCH} "
+    [ "${GITBRANCH}" != "" ] && GITBRANCH="${GITBRANCH} "
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -102,7 +102,7 @@ history_conditional_append()
 {
     HISTORY_THRESHOLD_SECONDS=30
     local NOW=$EPOCHSECONDS
-    [ _$HISTORY_APPENDED = _ ] && HISTORY_APPENDED=$NOW
+    [ "$HISTORY_APPENDED" = "" ] && HISTORY_APPENDED=$NOW
     [ $(($NOW - $HISTORY_APPENDED)) -gt $HISTORY_THRESHOLD_SECONDS ] && {
         history -a
         HISTORY_APPENDED=$NOW
