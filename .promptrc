@@ -102,6 +102,7 @@ history_conditional_append()
 {
     HISTORY_THRESHOLD_SECONDS=30
     local NOW=$EPOCHSECONDS
+    [ "$NOW" = "" ] && NOW=`date +%s`
     [ "$HISTORY_APPENDED" = "" ] && HISTORY_APPENDED=$NOW
     [ $(($NOW - $HISTORY_APPENDED)) -gt $HISTORY_THRESHOLD_SECONDS ] && {
         history -a
