@@ -84,12 +84,14 @@ alias .history="history | sort -k1.9 -V | grep -i"
 alias .ifconfig="ifconfig | grep inet\ "
 alias .ld="l | grep ^d"
 alias .lsof_tcp="sudo lsof -i -P -n | sort -k1.56 -Vru"
+alias .mydotfiles="pushd $MEGA/git/mydotfiles"
 alias .myfixXtermTitle=". $BBBIN/UTY_myfixXtermTitle.sh"
 alias .now='now -nc'
 alias .pd="popd ; dirs | sed 's/^[^ 	][^ 	]*//' | sed 's/^$/(dir stack now empty)/' | sed 's/^[^(].*//'"
 alias .s256sum="sha256sum"
 alias .shasum='shasum --algorithm 256'
 alias .showmount="findmnt"
+alias .strace_exec="strace -f -o .strace_log_\`now\`.log"
 alias .sudo_bash="/bin/sudo -i /bin/bash"
 alias .tf="tail -250f"
 alias .tmp="pushd $BBHOME/tmp"
@@ -107,6 +109,9 @@ export PATH=/mtkoss/como/tools/git/2.32.0/bin:${PATH}
     alias .gs="echo -n Repository:  ; basename \`git rev-parse --show-toplevel\` ; git status"
     alias .gtree="git ls-tree --long -r"
     alias .grepository="git rev-parse --show-toplevel"
+
+    #Make this typing mistake so often I figure might as well allow it..
+    alias .fs=.gs
 
     # alias .grepository="UTY_grepository.sh"
     # (...until I get UTY_grepository.sh imported to RB-EL6)
