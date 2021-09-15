@@ -16,15 +16,34 @@ shopt -s nocasematch
 [ _$HOSTNAME = _ ] && export HOSTNAME=`hostname`
 
 case $HOSTNAME in
+    # Home
     RmbInspiro2018) :
         export BBHOME=/home/rmbjr60
+        export HAS_git=true
+        export HAS_screen=true
+        export HAS_gnuplot=true
     ;;
+    # Ford
+    WGC1157KDJ793) :
+        export BBHOME=/cygdrive/c/legacy/cygwin64/home/RBYERS11
+        export HAS_git=true
+        export HAS_screen=false
+        export HAS_gnuplot=false
+    ;;
+    # Mediatek Windows
     ds903039-l01) :
         export BBHOME=/c/Users/ds903039
+        export HAS_git=true
+        export HAS_screen=false
+        export HAS_gnuplot=false
     ;;
+    # Mediatek VMs
     RB-EL*) :
         export BBHOME=/home/rbyers
         export MTKGIT=/mtkoss/como/tools/git/2.32.0/bin
+        export HAS_git=true
+        export HAS_screen=true
+        export HAS_gnuplot=false
     ;;
 esac
 
@@ -82,6 +101,7 @@ alias .downloads="pushd $BBHOME/Downloads"
 alias .ffx="firefox&"
 alias .history="history | sort -k1.9 -V | grep -i"
 alias .ifconfig="ifconfig | grep inet\ "
+alias .ipaddr="ip -oneline -4 addr | grep -v 127.0.0.1 | cut -d: -f2-"
 alias .ld="l | grep ^d"
 alias .lsof_tcp="sudo lsof -i -P -n | sort -k1.56 -Vru"
 alias .mydotfiles="pushd $MEGA/git/mydotfiles"
@@ -97,13 +117,20 @@ alias .tf="tail -250f"
 alias .tmp="pushd $BBHOME/tmp"
 alias .vimrc="gvim $BBHOME/.vimrc_rbyers"
 
+# aliases for /bin/ls
+
+[ -f $BBBIN/UTY_lsAliases.sh ] && {
+    .  $BBBIN/UTY_lsAliases.sh
+}
+
 # git aliases
 
 SAVEPATH=$PATH
 export PATH=/mtkoss/como/tools/git/2.32.0/bin:${PATH}
 
-/bin/which -a git > /dev/null 2>&1
-[ $? -eq 0 ] && {
+# TOO SLOW: /bin/which -a git > /dev/null 2>&1
+
+[ true = $HAS_git ] && {
 
     alias .git='pushd $MEGA/git'
     alias .gs="echo -n Repository:  ; basename \`git rev-parse --show-toplevel\` ; git status"
@@ -145,16 +172,16 @@ alias ,minimal_python='cat $PUBLIC_HTML/python/minimal.py'
 
 # screen
 
-/bin/which -a screen > /dev/null 2>&1
-[ $? -eq 0 ] && {
+# TO SLOW: /bin/which -a screen > /dev/null 2>&1
+[ true = $HAS_screen ] && {
     alias .sl="screen -list"
     alias .sr="screen -R"
 }
 
 # gnuplot
 
-/bin/which -a gnuplot > /dev/null 2>&1
-[ $? -eq 0 ] && {
+# TO SLOW: /bin/which -a gnuplot > /dev/null 2>&1
+[ true = $HAS_gnuplot ] && {
     [ -f $PUBLIC_HTML/gnuplot/gnuplot_help.txt ] && alias ,gnuplothelp="cat $PUBLIC_HTML/gnuplot/gnuplot_help.txt"
 }
 
