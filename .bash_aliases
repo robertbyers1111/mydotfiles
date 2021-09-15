@@ -1,4 +1,4 @@
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 # NOTE: To pass an arg in the middle of an alias, you need to create a function as in this example..
 #
@@ -9,7 +9,7 @@
 #
 # Uhh Oh! RLEL6 never implemented the /usr merge, and Mediatek *still* uses (in 2021) RHEL6 (btw, wtf?)
 #
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 shopt -s nocasematch
 
@@ -74,7 +74,6 @@ alias grep="grep -E --color=auto"
 alias gwenview="echo .local/share/Trash/{info,files} ; /bin/gwenview ; echo .local/share/Trash/{info,files}"
 alias h2d="hex2dec"
 alias igrep="grep -Ei --color=auto"
-alias lssz="l -Sr | .commify"
 alias lstr="l -tr"
 alias l="/bin/ls --time-style=\"+%Y-%m-%d %H:%M:%S\" --group-directories-first -lLFANGv"
 alias mc="echo did you really want to launch midnight commander?"
@@ -330,6 +329,7 @@ esac
 #   alias jj="JJscreen.tcl"
 #   alias lc="~rmbjr60/bin/lsal | commify"
 #   alias lc="$RMBJR60/bin/lsal | commify"
+#   alias lssz="l -Sr | .commify"
 #   alias lstr="~rmbjr60/bin/lsal -tr"
 #   alias l="~rmbjr60/bin/lsal"
 #   alias pycharm="~rmbjr60/pycharm/bin/pycharm.sh"
