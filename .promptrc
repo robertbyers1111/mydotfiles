@@ -97,16 +97,28 @@ setGITBRANCH()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # This function issues 'history -a' *if* the user's bash_history file has not
 # been updated "recently" (i.e., within HISTORY_THRESHOLD_SECONDS seconds).
+#
+# NOTE: EPOCHSECONDS requires bash 5.0+, therefore we don't do anything if
+# EPOCHSECONDS does not return anything.
 
-history_conditional_append()
-{
-    HISTORY_THRESHOLD_SECONDS=30
-    local NOW=$EPOCHSECONDS
-    [ "$NOW" = "" ] && NOW=`date +%s`
-    [ "$HISTORY_APPENDED" = "" ] && HISTORY_APPENDED=$NOW
-    [ $(($NOW - $HISTORY_APPENDED)) -gt $HISTORY_THRESHOLD_SECONDS ] && {
-        history -a
-        HISTORY_APPENDED=$NOW
+[ "$EPOCHSECONDS" != "" ] && {
+    # Yay! EPOCHSECONDS is supported. We can do something!
+    history_conditional_append()
+    {
+        HISTORY_THRESHOLD_SECONDS=30
+        local NOW=$EPOCHSECONDS
+        [ "$NOW" = "" ] && NOW=`date +%s`
+        [ "$HISTORY_APPENDED" = "" ] && HISTORY_APPENDED=$NOW
+        [ $(($NOW - $HISTORY_APPENDED)) -gt $HISTORY_THRESHOLD_SECONDS ] && {
+            history -a
+            HISTORY_APPENDED=$NOW
+        }
+    }
+} || {
+    # Make this function a noop if bash don't support EPOCHSECONDS
+    history_conditional_append()
+    {
+        true
     }
 }
 
