@@ -3,6 +3,8 @@ if has("msdos") || has("win32") || has("win64")
         source c:\Users\rmbjr60\_gvimrc_rbyers
     elseif hostname() =~ "^DS903039"
         source c:\Users\DS903039\_gvimrc_rbyers
+    elseif hostname() =~ "^WGC1157KDJ793"
+        source c:\Users\rbyers11\_gvimrc_rbyers
     endif
 else
     source ~/.gvimrc_rbyers
