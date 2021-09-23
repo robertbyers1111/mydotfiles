@@ -85,13 +85,17 @@ setHOSTORENV()
 # This will set GITBRANCH to current git branch *if* our current directory
 # happens to be part of a git repository.
 
-setGITBRANCH()
-{
-    # (__git_ps1 is from ~/.git_prompt.sh)
-    GITBRANCH=$(__git_ps1 "(%s)")
-
-    # Add a trailing space if we found that we're in a branch
-    [ "${GITBRANCH}" != "" ] && GITBRANCH="${GITBRANCH} "
+[ "$HAS_git" = "true" ] && [ "$CYGDIR" = "" ] && {
+    setGITBRANCH()
+    {
+        # FYI '__git_ps1' is from ~/.git_prompt.sh
+        GITBRANCH=$(__git_ps1 "(%s)")
+    
+        # Also add a trailing space if we found that we're in a branch
+        [ "${GITBRANCH}" != "" ] && GITBRANCH="${GITBRANCH} "
+    }
+} || {
+    setGITBRANCH() { true; }
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -126,6 +130,7 @@ setGITBRANCH()
 # This will be set to be the prompt command
 
 prompt_command() {
+    #echo promt_command:000
 
     #-- ESCAPE SEQUENCES
 
@@ -196,18 +201,22 @@ prompt_command() {
 
     #- This will set ENDCHAR based on whether current uid is root or not
 
+    #echo promt_command:001
     setENDCHAR
 
     #- This will set HOSTORVENV, which is a combination of hostname and virtual environment
 
+    #echo promt_command:002
     setHOSTORENV
 
     #- This will set PROMPTCOLORCLASS, which uses current hostname or HOSTORVENV to determine a color class for the prompt
 
+    #echo promt_command:003
     setPROMPTCOLORCLASS
 
     #- Change BG color depending on color class
 
+    #echo promt_command:004
     [ $PROMPTCOLORCLASS = RmbInspiro2018 ] && PROMPT_COLOR="\[${ESC}[${BRIGHT};${BG_CYAN};${FG_WHITE}m\]"
     [ $PROMPTCOLORCLASS = IRBT-8758l ] && PROMPT_COLOR="\[${ESC}[${BRIGHT};${BG_GREEN};${FG_WHITE}m\]"
     [ $PROMPTCOLORCLASS = irobert ] && PROMPT_COLOR="\[${ESC}[${BRIGHT};${BG_YELLOW};${FG_WHITE}m\]"
@@ -216,19 +225,29 @@ prompt_command() {
 
     #- Change window title
 
+    #echo promt_command:005
     echo -ne "\033]0;`pwd | sed 's@.*/\([^/][^/]*/[^/][^/]*/[^/][^/]*\)@\1@'`\007"
 
     #-- Add the current git branch if our current directory happens to be part of a git repository
 
+    #echo promt_command:006
     setGITBRANCH
 
     #- Finally, update the prompt (and maybe the history file too)
 
+    #echo promt_command:007
     WORKINGDIR='$(pwd | sed "s@.*/\([^/][^/]*/[^/][^/]*\)@\1@")'
+
+    #echo promt_command:008
     TIME="\t"
+
+    #echo promt_command:009
     export PS1="${PROMPT_COLOR}($HOSTORVENV) $WORKINGDIR ${GITBRANCH}$TIME$NORMAL$ENDCHAR "
+
+    #echo promt_command:010
     history_conditional_append
 
+    #echo promt_command:999
 }
 
 #-------------------------------------------------------------------------------
